@@ -6,7 +6,7 @@ from pexpect import (spawn, replwrap, EOF)
 from subprocess import check_output
 import re
 import signal
-from .images import (
+from images import (
     extract_image_filenames, display_data_for_image, image_setup_cmd
 )
 
