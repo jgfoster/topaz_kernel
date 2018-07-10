@@ -1,12 +1,13 @@
 """
 Jupyter kernel for GemStone/S 64 Bit Topaz command line
 """
+import os as os
 from ipykernel.kernelbase import Kernel
 from pexpect import (spawn, replwrap, EOF)
 from subprocess import check_output
 import re
 import signal
-from images import (
+from .images import (
     extract_image_filenames, display_data_for_image, image_setup_cmd
 )
 
@@ -28,7 +29,7 @@ class TopazKernel(Kernel):
     @property
     def banner(self):
         if self._banner is None:
-            self._banner = check_output(['topaz', '--version']).decode('utf-8')
+            self._banner = check_output(['topaz', '-v']).decode('utf-8')
         return self._banner
 
     language_info = {'name': 'topaz',
@@ -47,9 +48,12 @@ class TopazKernel(Kernel):
         # so that topaz and its children are interruptible.
         sig = signal.signal(signal.SIGINT, signal.SIG_DFL)
         try:
-            path = '/Users/jfoster/Library/GemStone/GemStone64Bit3.4.1-i386.Darwin/bin/topaz'
-            child = spawn(command=path, args=['-il'], timeout=1, echo=False, encoding='utf-8')
-            self.topazwrapper = replwrap.REPLWrapper(child, orig_prompt='topaz >', prompt_change='topaz 1>')
+            os.environ["PATH"] = "/Users/jfoster/Library/GemStone/GemStone64Bit3.4.1-i386.Darwin/bin:" + os.environ["PATH"]
+            child = spawn(command="topaz", args=['-il'], timeout=1, echo=True, encoding='utf-8')
+            self.topazwrapper = replwrap.REPLWrapper(child,
+                                                     orig_prompt='topaz> ',
+                                                     prompt_change='set user DataCurator pass swordfish gems gs64stone4\nlogin',
+                                                     new_prompt='topaz 1> ')
         finally:
             signal.signal(signal.SIGINT, sig)
 
