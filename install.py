@@ -9,16 +9,8 @@ from IPython.utils.tempdir import TemporaryDirectory
 kernel_json = {"argv": [sys.executable, "-m", "topaz_kernel", "-f", "{connection_file}"],
                "display_name": "Topaz",
                "language": "topaz",
-               "codemirror_mode": "smalltalk",
-               "env": {
-                   "GEMSTONE": "/Users/jfoster/Library/GemStone/GemStone64Bit3.4.1-i386.Darwin",
-                   "GEMSTONE_SYS_CONF": "/Users/jfoster/Library/GemStone/db4/conf",
-                   "GEMSTONE_GLOBAL_DIR": "/Users/jfoster/Library/GemStone/db4",
-                   "GEMSTONE_LOG": "/Users/jfoster/Library/GemStone/db4/log/gs64stone4.log",
-                   "GEMSTONE_EXE_CONF": "/Users/jfoster/Library/GemStone/db4/conf",
-                   "GEMSTONE_NRS_ALL": "#netldi:netldi4#dir:/Users/jfoster/Library/GemStone/db4#log:/Users/jfoster/Library/GemStone/db4/log/%N_%P.log"
-               }
-               }
+               "codemirror_mode": "smalltalk"
+              }
 
 
 def install_my_kernel_spec(user=True, prefix=None):

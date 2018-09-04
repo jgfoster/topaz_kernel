@@ -48,11 +48,10 @@ class TopazKernel(Kernel):
         # so that topaz and its children are interruptible.
         sig = signal.signal(signal.SIGINT, signal.SIG_DFL)
         try:
-            os.environ["PATH"] = "/Users/jfoster/Library/GemStone/GemStone64Bit3.4.1-i386.Darwin/bin:" + os.environ["PATH"]
             child = spawn(command="topaz", args=['-il'], timeout=1, echo=True, encoding='utf-8')
             self.topazwrapper = replwrap.REPLWrapper(child,
                                                      orig_prompt='topaz> ',
-                                                     prompt_change='set user DataCurator pass swordfish gems gs64stone4\nlogin',
+                                                     prompt_change='set user DataCurator pass swordfish gems gs64stone\nlogin',
                                                      new_prompt='topaz 1> ')
         finally:
             signal.signal(signal.SIGINT, sig)
