@@ -68,6 +68,7 @@ class TopazKernel(Kernel):
     def do_execute(self, code, silent, store_history=True,
                    user_expressions=None, allow_stdin=False):
 
+        input = code
         # check for an empty line
         if not code.strip():
             return {'status': 'ok', 'execution_count': self.execution_count,
@@ -116,6 +117,8 @@ class TopazKernel(Kernel):
             image_filenames, output = extract_image_filenames(output)
 
             # Send standard output
+            if output.startswith(input):
+                output = output[len(input) + 2:-1]
             stream_content = {'name': 'stdout', 'text': output}
             self.send_response(self.iopub_socket, 'stream', stream_content)
 
