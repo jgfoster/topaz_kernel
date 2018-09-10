@@ -57,7 +57,7 @@ class TopazKernel(Kernel):
             signal.signal(signal.SIGINT, sig)
 
         # Register Topaz function to write image data to temporary file
-        self.topazwrapper.run_command(image_setup_cmd)
+        # self.topazwrapper.run_command(image_setup_cmd)
 
     def do_apply(self, content, bufs, msg_id, reply_metadata):
         pass
@@ -67,9 +67,37 @@ class TopazKernel(Kernel):
 
     def do_execute(self, code, silent, store_history=True,
                    user_expressions=None, allow_stdin=False):
+
+        # check for an empty line
         if not code.strip():
             return {'status': 'ok', 'execution_count': self.execution_count,
                     'payload': [], 'user_expressions': {}}
+
+        # we disallow several commands
+        if code.lower().startswith(('ed', 'exi', 'log', 'pa', 'q', 'sh', 'sp')):
+            stream_content = {'name': 'stdout', 'text': 'Unauthorized command!'}
+            self.send_response(self.iopub_socket, 'stream', stream_content)
+            return {'status': 'abort', 'execution_count': self.execution_count,
+                    'payload': [''], 'user_expressions': {}}
+
+        # multiline commands need to be handled specially
+        if code.lower().startswith(('doi', 'pr', 'ru')):
+            lines = code.splitlines()
+            if lines[-1] == '%':
+                lines.pop()
+            for line in lines:
+                self.topazwrapper.child.sendline(line)
+            code = '%'
+
+        # EXEC command is even more special
+        if code.lower().startswith('exe'):
+            lines = code.splitlines()
+            if len(lines) > 1 or not code.rstrip()[-1] == '%':
+                if lines[-1] == '%':
+                    lines.pop()
+                for line in lines:
+                    self.topazwrapper.child.sendline(line)
+                code = '%'
 
         interrupted = False
         try:
@@ -106,7 +134,7 @@ class TopazKernel(Kernel):
 
         # noinspection PyBroadException
         try:
-            exitcode = int(self.topazwrapper.run_command('echo $?').rstrip())
+            exitcode = 0	# int(self.topazwrapper.run_command('echo $?').rstrip())
         except Exception:
             exitcode = 1
 
